@@ -1,9 +1,42 @@
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class queen extends chess_piece{
     public queen(chess_square square, boolean is_white){
         super(square,is_white);
         this.type = "queen";
+
+        if (is_white){
+            try (ZipFile zipFile = new ZipFile("chess-pieces.zip")) { 
+            ZipEntry entry = zipFile.getEntry("white-queen.png"); 
+            if (entry != null) {
+                try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                    this.image = ImageIO.read(inputStream);
+                }
+            } else {
+                System.err.println("Sprite image not found in the zip folder.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
+        } else {
+            try (ZipFile zipFile = new ZipFile("chess-pieces.zip")) { 
+                ZipEntry entry = zipFile.getEntry("black-queen.png"); 
+                if (entry != null) {
+                    try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                        this.image = ImageIO.read(inputStream);
+                    }
+                } else {
+                    System.err.println("Sprite image not found in the zip folder.");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }  
     }
 
     public void queen_horizontal_move(int n){

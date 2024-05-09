@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-
 public class chess_square{
     private Character column;
     private int row;
-    private Boolean white_square;
     private Boolean is_occupied;
     private chess_piece occupied_with;
 
@@ -11,11 +8,6 @@ public class chess_square{
         this.row = roww;
         this.column = columm;
         this.is_occupied = false;
-        if (((int) columm + roww) % 2 == 1){
-            this.white_square = true;
-        } else {
-            this.white_square = false;
-        }
         this.occupied_with = null;
     }
 

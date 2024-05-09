@@ -1,9 +1,43 @@
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.io.IOException;
+import java.io.InputStream;
+
 
 public class king extends chess_piece{
     public king(chess_square square, boolean is_white){
         super(square,is_white);
         this.type = "king";
+
+        if (is_white){
+            try (ZipFile zipFile = new ZipFile("chess-pieces.zip")) { 
+            ZipEntry entry = zipFile.getEntry("white-king.png"); 
+            if (entry != null) {
+                try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                    this.image = ImageIO.read(inputStream);
+                }
+            } else {
+                System.err.println("Sprite image not found in the zip folder.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
+        } else {
+            try (ZipFile zipFile = new ZipFile("chess-pieces.zip")) { 
+                ZipEntry entry = zipFile.getEntry("black-king.png"); 
+                if (entry != null) {
+                    try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                        this.image = ImageIO.read(inputStream);
+                    }
+                } else {
+                    System.err.println("Sprite image not found in the zip folder.");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
     }
 
     public void king_upwards_move(){
@@ -208,14 +242,27 @@ public class king extends chess_piece{
         final chess_square origin_square = square;
         for (chess_square position: kill_sight()){
             if (white && !position.is_occupied_with_white()){
-                move(position);
-                if (!chess_board.check_for_black()){
-                    moves.add(position);
+                if (position.is_occupied()){
+                    if (take_is_valid(position)){
+                        moves.add(position);
+                    }
+                }
+                else { 
+                    move(position);
+                    if (!chess_board.check_for_black()){
+                        moves.add(position);
+                    }
                 }
             } else if (!white && !position.is_occupied_with_black()){
-                move(position);
-                if (!chess_board.check_for_white()){
-                    moves.add(position);
+                if (position.is_occupied()){
+                    if (take_is_valid(position)){
+                        moves.add(position);
+                    }
+                } else {
+                    move(position);
+                    if (!chess_board.check_for_white()){
+                        moves.add(position);
+                    }
                 }
             }
         }
@@ -231,25 +278,30 @@ public class king extends chess_piece{
         for (chess_piece i: chess_board.white_pieces()){
             white_vision.addAll(i.kill_sight());
         }
-        if (white && square == chess_board.e1 && square.right(3).is_occupied() && !square.right(1).is_occupied()){
-            if ((square.right(3).occupied_with().type().equals("white rook")) && !square.right(1).is_occupied()){
-                 if (!black_vision.contains(chess_board.f1)&&!black_vision.contains(chess_board.g1)){
-                    moves.add(chess_board.g1);
+        if (white && !chess_board.check_for_black()){
+            if (square == chess_board.e1 && square.right(3).is_occupied() && !square.right(1).is_occupied()){
+                if ((square.right(3).occupied_with().type().equals("white rook")) && !square.right(1).is_occupied()){
+                    if (!black_vision.contains(chess_board.f1)&&!black_vision.contains(chess_board.g1)){
+                        moves.add(chess_board.g1);
+                    }
+                }
+            } else if (square == chess_board.e1 && square.right(-4).is_occupied() && !square.right(-1).is_occupied()){
+                if ((square.right(-4).occupied_with().type().equals("white rook")) && !square.right(-2).is_occupied() && !square.right(-3).is_occupied()){
+                    if (!black_vision.contains(chess_board.c1)&&!black_vision.contains(chess_board.d1)){
+                        moves.add(chess_board.c1);
+                    }
                 }
             }
-        } else if (white && square == chess_board.e1 && square.right(-4).is_occupied() && !square.right(-1).is_occupied()){
-            if ((square.right(-4).occupied_with().type().equals("white rook")) && !square.right(-2).is_occupied() && !square.right(-3).is_occupied()){
-                if (!black_vision.contains(chess_board.c1)&&!black_vision.contains(chess_board.d1)){
-                    moves.add(chess_board.c1);
+        }
+        else if (!white && !chess_board.check_for_white()){
+            if (square == chess_board.e8 && square.right(3).is_occupied() && !square.right(1).is_occupied()){
+                if ((square.right(3).occupied_with().type().equals("black rook")) && !square.right(1).is_occupied()){
+                    moves.add(chess_board.g8);
                 }
-            }
-        } else if (!white && square == chess_board.e8 && square.right(3).is_occupied() && !square.right(1).is_occupied()){
-            if ((square.right(3).occupied_with().type().equals("black rook")) && !square.right(1).is_occupied()){
-                moves.add(chess_board.g8);
-            }
-        } else if (!white && square == chess_board.e8 && square.right(-4).is_occupied() && !square.right(-1).is_occupied()){
-            if ((square.right(-4).occupied_with().type().equals("black rook")) && !square.right(-2).is_occupied() && !square.right(-3).is_occupied()){
-                moves.add(chess_board.c8);
+            } else if (square == chess_board.e8 && square.right(-4).is_occupied() && !square.right(-1).is_occupied()){
+                if ((square.right(-4).occupied_with().type().equals("black rook")) && !square.right(-2).is_occupied() && !square.right(-3).is_occupied()){
+                    moves.add(chess_board.c8);
+                }
             }
         }
         return moves;

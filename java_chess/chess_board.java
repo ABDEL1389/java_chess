@@ -314,7 +314,6 @@ public class chess_board{
         }
     }
 
-    
     public static queen promoted_white_queen1 = new queen(null, true);
     public static queen promoted_white_queen2 = new queen(null, true);
     public static queen promoted_white_queen3 = new queen(null, true);

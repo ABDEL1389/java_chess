@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.*;
 
 public class java_chess{
     private static boolean white_turn = true;
@@ -43,8 +44,12 @@ public class java_chess{
     }
 
     public static void game(){
+        
         Scanner scanner = new Scanner(System.in);
         while (game_active()){
+            SwingUtilities.invokeLater(() -> {
+                board_gui.board.display();
+            });
             if (white_turn){
                 ArrayList<chess_piece> available_pieces_to_move = new ArrayList<chess_piece>();
                 for (chess_piece i:chess_board.white_pieces()){
@@ -102,13 +107,19 @@ public class java_chess{
                     chess_board.white_king.short_castle();
                 } else if (chosen_piece.type().equals("white king") && (chosen_piece.find()==chess_board.e1) && destination==chess_board.c1){
                     chess_board.white_king.long_castle();
-                } else if (destination.is_occupied()){
+                } else if (destination.is_occupied_with_black()){
                     chosen_piece.take(destination);
                 } else {
                     chosen_piece.move(destination);
                 }
                 white_turn = false;
+                SwingUtilities.invokeLater(() -> {
+                    board_gui.board.display();
+                });
             } else {
+                SwingUtilities.invokeLater(() -> {
+                    board_gui.board.display();
+                });
                 ArrayList<chess_piece> available_pieces_to_move = new ArrayList<chess_piece>();
                 for (chess_piece i:chess_board.black_pieces()){
                     if (i.valid_moves().size()>0){
@@ -165,7 +176,7 @@ public class java_chess{
                     chess_board.black_king.short_castle();
                 } else if (chosen_piece.type().equals("black king") && (chosen_piece.find()==chess_board.e8) && destination==chess_board.c8){
                     chess_board.black_king.long_castle();
-                } else if (destination.is_occupied()){
+                } else if (destination.is_occupied_with_white()){
                     chosen_piece.take(destination);
                 } else {
                     chosen_piece.move(destination);
@@ -173,21 +184,13 @@ public class java_chess{
                 white_turn = true;
             }
         }scanner.close();
+        SwingUtilities.invokeLater(() -> {
+            board_gui.board.display();
+        });
     }
 
     public static void main(String[] args){
         chess_board.board.setup();
-        game();
-        //chess_board.black_h_pawn.double_push();
-        //chess_board.black_h_pawn.single_push();
-        //chess_board.black_h_pawn.single_push();
-        //chess_board.black_h_pawn.pawn_take_left();
-        //chess_board.white_bishop2.bishop_top_left_diagonal_move(4);
-        //chess_board.black_d_pawn.double_push();
-        //System.out.println(chess_board.black_h_pawn.valid_moves2());
-        //System.out.println(chess_board.c1.occupied_with().type());
-        //System.out.println(chess_board.black_h_pawn.find().to_string());
-        //new board_gui();
-        
+        game();    
     }
 }

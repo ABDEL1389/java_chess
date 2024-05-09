@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class chess_piece{
@@ -5,6 +6,7 @@ public abstract class chess_piece{
     Boolean active;
     Boolean white;
     String type;
+    Image image;
 
     public chess_piece(chess_square square, boolean is_white){
         this.square = square;
@@ -17,6 +19,15 @@ public abstract class chess_piece{
         active = false;
         square = null;
     }
+
+    public Image image(){
+        return image;
+    }
+
+    public void draw(Graphics g, Component observer) {
+        g.drawImage(image, 80*square.column()-80, 80*(9-square.row())-80, observer);
+    }
+
 
     public void set_square(chess_square new_square){
         active = true;
@@ -71,7 +82,7 @@ public abstract class chess_piece{
                 if (take_is_valid(position)){
                     moves.add(position);
                 }
-            } else if (!white && !position.is_occupied_with_black()){
+            } else if (!white && !position.is_occupied()){
                 move(position);
                 if (!chess_board.check_for_white()){
                     moves.add(position);
@@ -82,9 +93,10 @@ public abstract class chess_piece{
                 }
             }
         }
-        if (square != origin_square){
+        if (square!=origin_square){
             move(origin_square);
         }
+        
         return moves;
     }
 
@@ -138,7 +150,7 @@ public abstract class chess_piece{
             take(destination);
             if (!chess_board.check_for_white()){
                 is_valid = true;
-            }
+           }
             move(current_square);
             taken_piece.set_square(destination);
             destination.occupy_with(taken_piece);
